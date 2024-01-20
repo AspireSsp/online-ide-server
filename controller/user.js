@@ -1,31 +1,47 @@
 const User = require("../models/userModels")
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const authenticate = require('../middlewares/auth');
-const store = require('store');
-var sessionstorage = require('sessionstorage');
-var ls = require('local-storage');
-
-
 
 exports.register = async (req, res) => {
-    // console.log(req.user);
     try {
-        const { name, email, password, pic } = req.body;
-        if (!name || !email || !password) {
-            return res.status(422).json({ Error: "Plz fill all the field properly.." })
+        const { name, email, password, mobile } = req.body;
+        if (!name || !email || !password || !mobile) {
+            return res.status(422).json(
+                { 
+                    error : "Unprocessable Entity",
+                    message: !name ? "name is required." : !email ? "email is required." : !mobile ? "mobile no. is required." : "password is required." 
+                }
+            )
         }
         const userExist = await User.findOne({ email: email });
         if (userExist) {
-            return res.status(422).json({ Error: "User exist" })
+            return res.status(422).json(
+                {
+                    error : "Conflict",
+                    message: "User with the provided email already exists."
+                }
+            )
         }
-        const user = new User(req.body);
+        let userName = email.split('@')[0];
+        const user = new User({...req.body, userName});
 
         const newUser = await user.save();
-        res.status(200).json({ message: "success", newUser})
+        let token = await newUser.generateAuthToken();
+        // console.log(token);
+        res.status(200).json(
+            { 
+                success : true,
+                message: "New user created successfully.", 
+                newUser,
+                token,
+            }
+        )
     } catch (error) {
-        res.status(200).json({ message: error.message})
-        console.log(err)
+        res.status(500).json(
+            { 
+                error: 'Internal Server Error', 
+                message: error.message
+            }
+        );
     }
 
 }
@@ -33,87 +49,49 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        //  console.log(req.body);
         if (!email || !password) {
-            return res.status(400).json({ error: "fill proper details" })
+            return res.status(422).json(
+                { 
+                    error : "Unprocessable Entity",
+                    message: !email ? "email is required." : "password is required." 
+                }
+            )
         }
-        const userLogin = await User.findOne({ email }).select("+password");
-        if (userLogin) {
-            const isMatch = await bcrypt.compare(password, userLogin.password);
-            if (!isMatch) {
-                console.log("password not match");
-                res.status(400).json({ error: "invailid login details" })
-            } else {
-                res.status(200).json({ message: "login sucessfull", userLogin })
-            }
-        } else {
-            res.status(400).json({ error: "user error" })
+        const user = await User.findOne({ email }).select("+password");
+        if(!user){
+            return res.status(404).json(
+                {
+                    error : 'Not Found',
+                    message: 'User not found.' 
+                }
+            )
         }
-    } catch (error) {
-        console.log(error);
-    }
-}
-exports.updateUser = async (req, res) => {
-    const id = req.params.id;
-    const body = req.body;
-    const update = await User.findByIdAndUpdate({ _id: id }, body)
-    const resulet = await User.find({ _id: id });
-    res.send(resulet);
-}
-exports.updatePassword = async (req, res)=>{
-    try {
-        const {userId, oldPassword, newPassword} = req.body;
-        if(!oldPassword && !newPassword){
-            res.status(422).json({message : "old and new password is required"})
-        }
-        console.log(userId, oldPassword, newPassword);
-        const user = await User.findById(userId).select("+password")
-        console.log(user);
 
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            console.log("password not match");
-            res.status(400).json({ error: "old Password is not matched" })
+            return res.status(401).json(
+                { 
+                    error: 'Unauthorized', 
+                    message: 'Invalid username or password.' 
+                }
+            );
         } else {
-            // res.status(200).json({ message: "login sucessfull", userLogin })
-            const password = await bcrypt.hash(newPassword, 12)
-            console.log("psssss-->", password)
-            const updateUser = await User.updateOne({_id: userId} , {password : password}).select("+password");
-            res.status(200).json({message : "successs", updateUser});
-        }
+            let token = await user.generateAuthToken();
+            res.status(200).json(
+                { 
+                    success : true,
+                    message: "login successfull", 
+                    user,
+                    token,
+                }
+            )
+        }   
     } catch (error) {
-        
+        res.status(500).json(
+            { 
+                error: 'Internal Server Error', 
+                message: error.message
+            }
+        );
     }
-}
-exports.getfollower = async(req, res)=>{
-    const id = req.params.id;
-    const user = await User.findById(id);
-    const following = user.following;
-    console.log(following);
-    var followings =[];
-    for(let id of following){
-        const user = await User.findById(id);
-        followings.push(user)
-    }
-    res.status(200).json(followings);
-}
-exports.getUser = async (req, res) => {
-    try {
-        res.status(200).send(req.rootUser);
-    } catch (error) {
-        res.status(400).send({ message: "no jwt to found" });
-    }
-}
-exports.getallUser = async (req, res) => {
-    try {
-        const user = await User.find();
-        res.status(200).send(user);
-    } catch (error) {
-        res.status(400).send({ message: "no jwt to found" });
-    }
-}
-exports.logout = async (req, res) => {
-    // console.log("hello from getData router");
-    res.clearCookie('jwttoken', { path: '/' });
-    res.status(200).send("user logOut");
 }

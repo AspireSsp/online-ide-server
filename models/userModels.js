@@ -16,9 +16,13 @@ const userSchema = new mongoose.Schema({
         unique:true,
         validate:[validator.isEmail, "Please Enter a valid Email"]
     },
-    Mobile:{
+    userName:{
         type:String,
-        // required:[true,"Please Enter Your Mobile"],    (*optional*)
+        required:true,
+    },
+    mobile:{
+        type:String,
+        required:[true,"Please Enter Your Mobile"],   
         unique:true,
     },
     password:{
@@ -30,50 +34,38 @@ const userSchema = new mongoose.Schema({
         type : String,
         default : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
     },
-    about: {
-        type: String,
-    },
-    socialAccounts : {
-        type : Object,
-    },
-    highestEducation : {
-        type : String
-    },
-    currentJob : {
-        type : String
-    },
-    intetest: [
-        {
-            type : String
-        }
-    ],
-    following : [
-        {
-            type : String
-        }
-    ]
+    
 });
 
-//    we hashing the password...
+//hashing the password...
 userSchema.pre('save',async function (next){
-    console.log("hi bcrypt")
     if(this.isModified('password')){
         this.password =await bcrypt.hash(this.password, 12)
     }
     next();
-})
+});
 
-//  we are generating tokens
-userSchema.methods.generateAuthToken = async function(){
+// Generating token
+userSchema.methods.generateAuthToken = async function () {
     try {
-        let token = jwt.sign({_id:this._id},process.env.JWT_SECRET);
-        this.tokens = this.tokens.concat({token:token});
+        let token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
         await this.save();
         return token;
     } catch (error) {
-        console.log(error);
+        throw new Error(error);
     }
-}
+};
+
+//  token to reset password
+userSchema.methods.createPasswordResetToken = async function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minutes
+    return resetToken;
+};
 
 
 

@@ -4,7 +4,6 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser')
 
-// app.use(cors());
 app.use(cors({
   origin: '*',
   methods: ['POST', 'PUT', 'GET', 'OPTIONS','DELETE', 'HEAD'],
@@ -17,15 +16,12 @@ app.set("trust proxy", 1)
 
 app.use(cookieParser());
 
-//    route are import here..
+//route are import here..
 const user = require("./routes/userRoutes");
-const post = require("./routes/post");
+const compiler = require("./routes/compiler");
+
+app.use("/api/v1/user/", user);
+app.use("/api/v1/", compiler);
 
 
-app.use("/api/v1", user);
-app.use("/api/v1", post);
-
-
-//  Middleware for Errors
-// app.use(errorMiddleware);
 module.exports = app;
