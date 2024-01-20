@@ -23,5 +23,7 @@ const compiler = require("./routes/compiler");
 app.use("/api/v1/user/", user);
 app.use("/api/v1/", compiler);
 
-
+app.get("/", (req, res)=>{
+  res.status(200).json({success : true, message : "server is running ..."})
+})
 module.exports = app;
