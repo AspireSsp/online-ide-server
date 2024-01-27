@@ -31,7 +31,7 @@ exports.register = async (req, res) => {
             { 
                 success : true,
                 message: "New user created successfully.", 
-                newUser,
+                user : newUser,
                 token,
             }
         )
@@ -86,6 +86,26 @@ exports.login = async (req, res) => {
                 }
             )
         }   
+    } catch (error) {
+        res.status(500).json(
+            { 
+                error: 'Internal Server Error', 
+                message: error.message
+            }
+        );
+    }
+}
+
+exports.getUser = async (req, res) => {
+    try {   
+        res.status(200).json(
+            { 
+                success : true,
+                message: "User retrieval successful", 
+                user: req.user,
+                token: req.token,
+            }
+        )
     } catch (error) {
         res.status(500).json(
             { 

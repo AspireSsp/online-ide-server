@@ -19,9 +19,13 @@ app.use(cookieParser());
 //route are import here..
 const user = require("./routes/userRoutes");
 const compiler = require("./routes/compiler");
+const codeFile = require("./routes/codeFile");
+const codeFolder = require("./routes/codeFolder");
 
-app.use("/api/v1/user/", user);
 app.use("/api/v1/", compiler);
+app.use("/api/v1/user/", user);
+app.use("/api/v1/file/", codeFile);
+app.use("/api/v1/folder/", codeFolder);
 
 app.get("/", (req, res)=>{
   res.status(200).json({success : true, message : "server is running ..."})
