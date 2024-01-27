@@ -7,6 +7,7 @@ compiler.init(options);
 exports.compile = async (req, res) => {
     try {
         const {code, input, language} = req.body;
+        console.log(req.body);
 
         var envData = { OS : "windows"}; 
         // var envData = { OS : "linux" }; 
@@ -75,10 +76,11 @@ exports.compile = async (req, res) => {
 }
 
 exports.compileCode = async(req, res)=>{
+    let filePath;
     try {
         const {code, input, language} = req.body;
 
-        const filePath = await createFile(language, code);
+        filePath = await createFile(language, code);
 
         const output = await executeCode(language, filePath);
         await removeFile(filePath);
@@ -89,6 +91,7 @@ exports.compileCode = async(req, res)=>{
             }
         )
     } catch (error) {
+        await removeFile(filePath);
         res.status(500).json(
             { 
                 error: 'Internal Server Error', 

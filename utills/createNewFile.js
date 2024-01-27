@@ -24,6 +24,13 @@ const removeFile = async(filePath)=>{
             console.log(`File ${filePath} has been successfully removed.`);
         }
     });
+    fs.unlink(filePath.split('.')[0]+'.out', (err)=>{
+        if (err) {
+            console.error(`Error removing file: ${err.message}`);
+        } else {
+            console.log(`File ${filePath} has been successfully removed.`);
+        }
+    });
 }
 
 module.exports = {createFile, removeFile}
