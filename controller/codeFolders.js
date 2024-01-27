@@ -13,7 +13,7 @@ exports.createFolder = async (req, res)=>{
                 }
             )
         }
-        console.log(req.body);
+        // console.log(req.body);
         const folder = await CodeFolder.create({...req.body, userId : req.userId});
         res.status(200).json(
             { 
@@ -144,7 +144,8 @@ exports.allFolderWithFiles = async (req, res)=>{
         const files = await CodeFile.aggregate([
             {
                 $match : {
-                    userId : req.userId
+                    userId : req.userId,
+                    folderId: null,
                 }
             },
         ])

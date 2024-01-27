@@ -7,7 +7,6 @@ compiler.init(options);
 exports.compile = async (req, res) => {
     try {
         const {code, input, language} = req.body;
-        console.log(req.body);
 
         var envData = { OS : "windows"}; 
         // var envData = { OS : "linux" }; 

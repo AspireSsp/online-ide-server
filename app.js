@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 
 app.use(cors({
   origin: '*',
-  methods: ['POST', 'PUT', 'GET', 'OPTIONS','DELETE', 'HEAD'],
+  methods: ['POST', 'PUT', 'GET', 'PATCH','DELETE', 'HEAD'],
   credentials: true
 }));
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +22,7 @@ const compiler = require("./routes/compiler");
 const codeFile = require("./routes/codeFile");
 const codeFolder = require("./routes/codeFolder");
 
-app.use("/api/v1/", compiler);
+app.use("/api/v1/compiler", compiler);
 app.use("/api/v1/user/", user);
 app.use("/api/v1/file/", codeFile);
 app.use("/api/v1/folder/", codeFolder);

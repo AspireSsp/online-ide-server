@@ -42,7 +42,7 @@ exports.updateFile = async (req, res)=>{
                 }
             )
         }
-        const updateFile = await CodeFile.findByIdAndUpdate(id, req,body);
+        const updateFile = await CodeFile.findByIdAndUpdate(id, req.body);
         res.status(200).json(
             { 
                 success : true,

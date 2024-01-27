@@ -17,6 +17,7 @@ const codeFileSchema = new mongoose.Schema({
     folderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "CodeFolder",
+        default: null,
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

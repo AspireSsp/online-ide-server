@@ -4,9 +4,9 @@ const authenticate = require('../middlewares/auth');
 const router = express.Router();
 
 router.route("/add").post(authenticate, createFile)
-router.route("/update/:id").post(authenticate, updateFile);
-router.route("/delete/:id").post(authenticate, deleteFile);
-router.route("/get/:id").post(authenticate, getFile);
+router.route("/update/:id").patch(authenticate, updateFile);
+router.route("/delete/:id").delete(authenticate, deleteFile);
+router.route("/get/:id").get(authenticate, getFile);
 
 
 module.exports = router; 

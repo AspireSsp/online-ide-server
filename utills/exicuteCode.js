@@ -24,6 +24,18 @@ const executeCode = async (language, filePath) => {
                 resolve(stdout);
             });
         });
+    }else if(language == "c"){
+        return new Promise((resolve, reject) => {
+            exec(`gcc ${filePath} -o ${outPath} && ${path.join(outputPath, `${jobId}.out`)}`, (error, stdout, stderr) => {
+                if (error) {
+                    reject(error);
+                }
+                if (stderr) {
+                    reject(stderr);
+                }
+                resolve(stdout);
+            });
+        });        
     }else if(language == "js"){
         return new Promise((resolve, reject) => {
             exec(`node ${filePath}`, (error, stdout, stderr) => {
@@ -47,6 +59,18 @@ const executeCode = async (language, filePath) => {
                 }
                 resolve(stdout);
                 
+            });
+        });
+    }else if(language == "java"){
+        return new Promise((resolve, reject) => {
+            exec(`javac ${filePath} -d ${outputPath}`, (error, stdout, stderr) => {
+                if (error) {
+                    reject(error);
+                }
+                if (stderr) {
+                    reject(stderr);
+                }
+                resolve(stdout);
             });
         });
     }
