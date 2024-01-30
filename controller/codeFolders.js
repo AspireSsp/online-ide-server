@@ -169,6 +169,11 @@ exports.getFolderDropdown = async (req, res)=>{
     try {
         const folders = await CodeFolder.aggregate([
             {
+                $match : {
+                    userId : req.userId,
+                }
+            },
+            {
                 $project: {
                     value: '$_id', 
                     _id: 0,

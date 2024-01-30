@@ -8,7 +8,7 @@ router.route("/all").get(authenticate, allFolder)
 router.route("/all/files").get(authenticate, allFolderWithFiles)
 router.route("/update/:id").patch(authenticate, updateFolder);
 router.route("/delete/:id").delete(authenticate, deleteFolder);
-router.route("/dropdown").get(getFolderDropdown);
+router.route("/dropdown").get(authenticate, getFolderDropdown);
 
 
 module.exports = router; 
