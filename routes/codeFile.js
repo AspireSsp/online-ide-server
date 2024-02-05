@@ -6,7 +6,7 @@ const router = express.Router();
 router.route("/add").post(authenticate, createFile)
 router.route("/update/:id").patch(authenticate, updateFile);
 router.route("/delete/:id").delete(authenticate, deleteFile);
-router.route("/get/:id").get(authenticate, getFile);
+router.route("/get/:id").get(getFile);
 
 
 module.exports = router; 
