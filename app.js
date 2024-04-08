@@ -35,7 +35,7 @@ app.get("/", (req, res)=>{
 
 // Schedule for 3 AM
 const rule = new schedule.RecurrenceRule();
-rule.hour = 6;
+rule.hour = '*';
 rule.minute = 0;
 
 const job = schedule.scheduleJob(rule, async function(){
